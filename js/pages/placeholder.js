@@ -7,26 +7,13 @@
  * its container with placeholder markup. Real implementations will
  * replace these renderers later, one feature at a time (see
  * DEVELOPMENT_RULES.md — Rule 3: small changes).
+ *
+ * The generic el() helper lives in js/dom.js (single canonical copy);
+ * this module keeps only the throwaway placeholder-specific helpers.
  * ------------------------------------------------------------------
  */
 
-export function el(tag, attrs = {}, children = []) {
-  const node = document.createElement(tag);
-  for (const [key, value] of Object.entries(attrs)) {
-    if (key === 'class') {
-      node.className = value;
-    } else if (key.startsWith('on') && typeof value === 'function') {
-      node.addEventListener(key.slice(2), value);
-    } else if (value !== undefined && value !== null) {
-      node.setAttribute(key, String(value));
-    }
-  }
-  for (const child of [].concat(children)) {
-    if (child == null) continue;
-    node.appendChild(typeof child === 'string' ? document.createTextNode(child) : child);
-  }
-  return node;
-}
+import { el } from '../dom.js';
 
 export function card(title, bodyNodes) {
   return el('div', { class: 'card' }, [
