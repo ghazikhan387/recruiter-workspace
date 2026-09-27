@@ -127,7 +127,40 @@ Never:
 * log unnecessary candidate information
 * add insecure shortcuts to make development easier
 
-## Rule 15 — Before Finishing a Task
+## Rule 15 — Page Module Contract
+
+Each page module (js/pages/*.js) exports:
+
+* `render(container)` — fills the container with DOM nodes. Must be
+  idempotent: calling it repeatedly replaces content without leaking
+  listeners or timers.
+* optionally `destroy()` — the lifecycle counterpart of `render`. The
+  shell calls it when the recruiter navigates to a **different** view
+  (never on re-renders of the same view). Any page that starts a
+  debounce timer (e.g. the autosave required by PRD §35), an interval,
+  or a store subscription **must** cancel it in `destroy()`.
+
+Shared domain state follows one rule: **one store per domain**
+(js/state/<domain>.js, created with createStore from js/state/store.js).
+navigationStore is the only store allowed to decide *which* record is
+shown; it carries `{ view, jobId, candidateId }` parsed from the URL
+hash. Pages read their context (job id, candidate id) from
+navigationStore and load records from their own domain store — they
+must not create ad-hoc global state or reach into another domain's
+store.
+
+## Rule 16 — Build DOM Safely
+
+Construct DOM exclusively with `createElement` / `setAttribute` /
+`createTextNode` (use the shared `el()` helper from js/dom.js). Never
+assign dynamic text through `innerHTML`, `outerHTML`, `document.write`,
+or `eval`. This is mandatory for every feature that renders recruiter-
+or CEIPAL-supplied text — especially template variable substitution
+(PRD §13), where string-templating plus innerHTML would introduce a
+stored-XSS vulnerability. Copy-to-clipboard payloads must use
+plain-text APIs (`navigator.clipboard.writeText`).
+
+## Rule 17 — Before Finishing a Task
 
 Report:
 

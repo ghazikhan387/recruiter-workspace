@@ -31,9 +31,19 @@ export const pages = {
 /** Render a view into its container (idempotent; safe to call repeatedly). */
 export function renderPage(view) {
   const page = pages[view];
-  if (!page) return false;
+  if (!page) {
+    console.warn(`[pages] no registered page module for view "${view}"`);
+    return false;
+  }
   const container = document.getElementById(page.containerId);
-  if (!container) return false;
+  if (!container) {
+    // Registry/DOM drift would otherwise fail silently (blank page, no
+    // error). tests/shell-consistency.test.js guards against this in CI.
+    console.warn(
+      `[pages] container #${page.containerId} for view "${view}" is missing from the DOM`
+    );
+    return false;
+  }
   page.module.render(container);
   return true;
 }

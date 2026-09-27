@@ -7,7 +7,8 @@
  * Until the product owner supplies them, we render neutral placeholders
  * "Job Aspect #1" ... "Job Aspect #9".
  */
-import { el, card, placeholderText } from './placeholder.js';
+import { el } from '../dom.js';
+import { card, placeholderText } from './placeholder.js';
 
 /** Number of structured job fields required by the PRD. */
 export const JOB_ASPECT_COUNT = 9;
