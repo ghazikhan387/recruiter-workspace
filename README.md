@@ -50,6 +50,7 @@ js/
                         #/candidate-workspace/:jobId?/:candidateId), no router library
   pages/
     placeholder.js      Throwaway card/list helpers for placeholder pages only
+                        (uses the canonical el() from dom.js — no duplicate)
     index.js            View-id → page-module registry
     dashboard.js        Placeholder
     jobs.js             Placeholder

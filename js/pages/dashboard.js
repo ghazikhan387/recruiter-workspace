@@ -1,7 +1,6 @@
 /**
  * js/pages/dashboard.js — Dashboard (placeholder only)
  */
-import { el } from '../dom.js';
 import { card, placeholderText, placeholderList } from './placeholder.js';
 
 export function render(container) {

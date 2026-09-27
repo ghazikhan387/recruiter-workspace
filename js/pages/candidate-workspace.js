@@ -1,7 +1,6 @@
 /**
  * js/pages/candidate-workspace.js — Candidate Workspace (placeholder only)
  */
-import { el } from '../dom.js';
 import { card, placeholderText } from './placeholder.js';
 
 export function render(container) {
