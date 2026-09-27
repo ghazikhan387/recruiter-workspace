@@ -1,0 +1,12 @@
+{
+  "name": "recruiter-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lightweight recruiter productivity workspace (foundation shell). HTML + Alpine.js + Vanilla JS modules + Vanilla CSS.",
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 5173",
+    "test": "node --test tests/"
+  },
+  "license": "UNLICENSED"
+}
