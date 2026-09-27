@@ -13,6 +13,12 @@
 export function createStore(initialState = {}) {
   let state = { ...initialState };
   const listeners = new Set();
+  // Keys explicitly set via setState at least once. Needed so the FIRST
+  // transition to a value still equal to the initial default notifies
+  // listeners (e.g. boot applying "#/ → dashboard" when the store was
+  // created with view: 'dashboard'). Without this, subscribers would
+  // miss the very first render on a fresh page load.
+  const touched = new Set();
 
   return {
     getState() {
@@ -21,13 +27,15 @@ export function createStore(initialState = {}) {
 
     /**
      * Patch the state with a partial object and notify listeners.
-     * Only keys whose values actually changed are reported.
+     * A key counts as changed if its value differs from the current
+     * one, or if it is being set explicitly for the first time.
      */
     setState(partial) {
       const changed = [];
       for (const [key, value] of Object.entries(partial)) {
-        if (state[key] !== value) {
+        if (state[key] !== value || !touched.has(key)) {
           state = { ...state, [key]: value };
+          touched.add(key);
           changed.push(key);
         }
       }

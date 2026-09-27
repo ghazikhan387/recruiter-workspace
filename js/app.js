@@ -20,7 +20,7 @@ import {
   navigate,
   startNavigation,
 } from './state/navigation.js';
-import { renderPage } from './pages/index.js';
+import { renderPage, pages } from './pages/index.js';
 
 /** Sidebar navigation items (order matters; matches PRD §40). */
 const NAV_ITEMS = [
@@ -59,6 +59,12 @@ function registerAlpineIntegration() {
     get view() {
       return navigationStore.getState().view;
     },
+    get jobId() {
+      return navigationStore.getState().jobId;
+    },
+    get candidateId() {
+      return navigationStore.getState().candidateId;
+    },
     navigate,
   });
 
@@ -86,10 +92,29 @@ function registerAlpineIntegration() {
 
 /** Re-render the active page whenever the navigation view changes. */
 function bindRendering() {
+  let currentView = null; // last rendered view (for lifecycle bookkeeping)
+
   navigationStore.subscribe((state, changed) => {
-    if (changed.includes('view')) {
-      renderPage(state.view);
+    if (!changed.includes('view')) return;
+
+    // Page-lifecycle contract (DEVELOPMENT_RULES.md Rule 15): a page
+    // may export destroy() as the counterpart of
+    // render(container). It is called when the recruiter navigates to
+    // a DIFFERENT view — never on repeat renders of the same view —
+    // so pages can cancel timers/subscriptions (e.g. the debounced
+    // autosave required by PRD §35) before they go inactive.
+    if (currentView !== null && state.view !== currentView) {
+      const previous = pages[currentView];
+      if (previous && typeof previous.module.destroy === 'function') {
+        try {
+          previous.module.destroy();
+        } catch (err) {
+          console.error(`[app] destroy() failed for view "${currentView}":`, err);
+        }
+      }
     }
+    currentView = state.view;
+    renderPage(state.view);
   });
 }
 

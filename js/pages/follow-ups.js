@@ -1,7 +1,8 @@
 /**
  * js/pages/follow-ups.js — Follow-ups (placeholder only)
  */
-import { el, card, placeholderText } from './placeholder.js';
+import { el } from '../dom.js';
+import { card, placeholderText } from './placeholder.js';
 
 export function render(container) {
   container.replaceChildren(

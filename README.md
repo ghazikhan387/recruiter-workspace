@@ -28,7 +28,8 @@ python3 -m http.server 5173
 ## Test / validate
 
 ```bash
-node --test tests/        # unit tests (navigation, store, job-aspect guard)
+npm test                # unit tests (navigation, store, boot, lifecycle, guards)
+node --test tests/*.test.js   # same suite, run directly
 node --check js/app.js    # syntax check any module
 ```
 
@@ -41,12 +42,14 @@ css/
   layout.css            Sidebar + main area layout
   components.css        Cards, buttons, chips, forms (placeholder styles)
 js/
-  app.js                Entry point: registers Alpine store/component, boots nav
+  app.js                Entry point: Alpine wiring, page lifecycle (render/destroy), boot
+  dom.js                Generic el() DOM builder (createElement only — never innerHTML)
   state/
     store.js            Tiny vanilla subscribe/notify store helper
-    navigation.js       Hash-based view state (#/jobs etc.), no router library
+    navigation.js       Hash routing incl. resource ids (#/job-workspace/:jobId,
+                        #/candidate-workspace/:jobId?/:candidateId), no router library
   pages/
-    placeholder.js      Shared DOM helpers for placeholder pages
+    placeholder.js      Throwaway card/list helpers for placeholder pages only
     index.js            View-id → page-module registry
     dashboard.js        Placeholder
     jobs.js             Placeholder
@@ -59,7 +62,7 @@ js/
     master-templates.js Placeholder
 vendor/
   alpine.min.js         Alpine.js 3.14.9 (pinned, checksum recorded in README)
-tests/                  Node built-in test runner suites
+tests/                  Node built-in test runner suites (npm test)
 ```
 
 ## Deliberate non-decisions
@@ -70,5 +73,10 @@ tests/                  Node built-in test runner suites
 - Not implemented (by design, this phase): candidate management, call
   assistant, template engine, talent pool behavior, follow-ups behavior,
   CEIPAL integration, analytics, Supabase persistence/auth.
+- Routing carries resource identity ({ view, jobId, candidateId }) so
+  Job/Candidate Workspaces can address specific records, but no data
+  layer exists yet — pages ignore the ids for now.
+- CSP headers: none yet; add `connect-src` restriction when the
+  Supabase client is wired in.
 - Persistence layer: none yet. The top bar exposes an empty save-status
   slot reserved for the future async "Saving… / Saved" indicator.
